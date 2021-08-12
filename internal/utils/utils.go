@@ -35,8 +35,8 @@ func InvertMap(m map[int]string) map[string]int {
 }
 
 func contains(arr []int, value int) bool {
-	for i := range arr {
-		if arr[i] == value {
+	for _, elem := range arr {
+		if elem == value {
 			return true
 		}
 	}
@@ -47,9 +47,9 @@ func contains(arr []int, value int) bool {
 func FilterByArray(input []int, filterArray []int) []int {
 	// Is it make sense to use map for filterArray for the fast find operation?
 	output := make([]int, 0)
-	for i := range input {
-		if !contains(filterArray, input[i]) {
-			output = append(output, input[i])
+	for _, elem := range input {
+		if !contains(filterArray, elem) {
+			output = append(output, elem)
 		}
 	}
 
