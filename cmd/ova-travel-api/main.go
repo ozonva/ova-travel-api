@@ -3,25 +3,13 @@ package main
 import (
 	"fmt"
 
+	"github.com/ozonva/ova-travel-api/internal/travel"
 	"github.com/ozonva/ova-travel-api/internal/utils"
 )
 
 func main() {
 	welcome := `Initial entry point for the ova travel api project`
 	fmt.Printf(welcome)
-
-	emptyBatch := make([]int, 0)
-	fmt.Println(emptyBatch)
-	fmt.Println(utils.SplitByBatch(emptyBatch, 3))
-	smallBatch := []int{1, 2}
-	fmt.Println(smallBatch)
-	fmt.Println(utils.SplitByBatch(smallBatch, 3))
-	tailBatch := []int{1, 2, 3, 4}
-	fmt.Println(tailBatch)
-	fmt.Println(utils.SplitByBatch(tailBatch, 3))
-	multipleBatch := []int{1, 2, 3, 4, 5, 6, 7, 8, 9}
-	fmt.Println(multipleBatch)
-	fmt.Println(utils.SplitByBatch(multipleBatch, 3))
 
 	emptyMap := make(map[int]string, 0)
 	fmt.Println(emptyMap)
@@ -40,4 +28,14 @@ func main() {
 	usualArr := []int{1, 2, 4, 7, 8}
 	fmt.Println(usualArr)
 	fmt.Println(utils.FilterByArray(usualArr, filterArray))
+
+	a1 := travel.Trip{UserID: 0, FromLocation: "1", DestLocation: "2"}
+	a2 := travel.Trip{UserID: 1, FromLocation: "3", DestLocation: "4"}
+	a3 := travel.Trip{UserID: 2, FromLocation: "1", DestLocation: "5"}
+	slice := []travel.Trip{a1, a2, a3}
+	fmt.Println(utils.SplitByBatch(slice, 1))
+
+	fmt.Println(utils.ConvertSpliceToMap(slice))
+
+	fmt.Println(utils.GetFileContent("Makefile"))
 }
