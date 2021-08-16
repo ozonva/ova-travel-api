@@ -37,5 +37,8 @@ func main() {
 
 	fmt.Println(utils.ConvertSpliceToMap(slice))
 
-	fmt.Println(utils.GetFileContent("Makefile"))
+	for range slice {
+		fmt.Println(utils.GetFileContent("Makefile"))
+	}
+
 }
