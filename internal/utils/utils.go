@@ -4,6 +4,17 @@ import (
 	"fmt"
 )
 
+func MinInt(values ...int) int {
+	minValue := values[0]
+	for _, value := range values {
+		if value < minValue {
+			minValue = value
+		}
+	}
+
+	return minValue
+}
+
 func InvertMap(m map[int]string) map[string]int {
 	result := make(map[string]int)
 	for key, value := range m {

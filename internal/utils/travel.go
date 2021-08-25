@@ -2,24 +2,14 @@ package utils
 
 import (
 	"fmt"
+
 	"github.com/ozonva/ova-travel-api/internal/travel"
 )
-
-func minInt(values ...int) int {
-	minValue := values[0]
-	for _, value := range values {
-		if value < minValue {
-			minValue = value
-		}
-	}
-
-	return minValue
-}
 
 func SplitByBatch(arr []travel.Trip, batch int) [][]travel.Trip {
 	batchSlice := make([][]travel.Trip, 0)
 	for i := 0; i < len(arr); i += batch {
-		batchSlice = append(batchSlice, arr[i:minInt(i+batch, len(arr))])
+		batchSlice = append(batchSlice, arr[i:MinInt(i+batch, len(arr))])
 	}
 
 	return batchSlice
