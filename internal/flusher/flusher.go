@@ -6,12 +6,12 @@ import (
 	"github.com/ozonva/ova-travel-api/internal/utils"
 )
 
-type Flusher interface {
+type FlusherProvider interface {
 	Flush(entities []travel.Trip) error
 }
 
 func NewFlusher(chunkSize int,
-	entityRepo repo.Repo) Flusher {
+	entityRepo repo.Repo) FlusherProvider {
 	return &flusher{
 		chunkSize:  chunkSize,
 		entityRepo: entityRepo,

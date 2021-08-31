@@ -9,5 +9,5 @@ import (
 
 func TestFlusher(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Flusher Suite")
+	RunSpecs(t, "FlusherProvider Suite")
 }

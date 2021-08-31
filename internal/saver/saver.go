@@ -16,12 +16,12 @@ type Saver interface {
 func NewSaver(
 	capacity uint,
 	timeLimitInSec uint64,
-	flusher flusher.Flusher) (Saver, error) {
+	flusher flusher.FlusherProvider) (Saver, error) {
 	if capacity == 0 {
 		return nil, errors.New("saver capacity can't be 0")
 	}
 	if timeLimitInSec == 0 {
-		return nil, errors.New("saver capacity can't be 0")
+		return nil, errors.New("saver time limit can't be 0")
 	}
 
 	return &saver{
@@ -35,7 +35,7 @@ func NewSaver(
 type saver struct {
 	capacity       uint
 	timeLimitInSec uint64
-	flusher        flusher.Flusher
+	flusher        flusher.FlusherProvider
 	entities       []travel.Trip
 
 	ticker *time.Ticker
