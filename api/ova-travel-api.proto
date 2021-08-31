@@ -1,0 +1,44 @@
+syntax = "proto3";
+package ova.travel.api;
+
+option go_package = "github.com/ozonva/ova-travel-api/pkg/ova-travel-api;ova_travel_api";
+
+import "google/protobuf/empty.proto";
+
+service TravelRpc {
+    rpc CreateTravel (CreateTravelRequest) returns (CreateTravelResponce);
+    rpc DescribeTravel (DescribeTravelRequest) returns (DescribeTravelResponse);
+    rpc ListTravels (google.protobuf.Empty) returns (ListTravelsResponse);
+    rpc RemoveTravel (RemoveTravelRequest) returns (google.protobuf.Empty);
+}
+
+message CreateTravelRequest {
+    string title = 1;
+    string description = 2;
+}
+
+message CreateTravelResponce {
+    uint32 id = 1;
+}
+
+message DescribeTravelRequest {
+    uint32 id = 1;
+}
+
+message DescribeTravelResponse {
+    Travel Travel = 1;
+}
+
+message RemoveTravelRequest {
+    uint32 id = 1;
+}
+
+message ListTravelsResponse {
+    repeated Travel items = 1;
+}
+
+message Travel {
+    uint32 id = 1;
+    string from = 2;
+    string dest = 3;
+}
