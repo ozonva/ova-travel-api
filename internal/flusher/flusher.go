@@ -6,12 +6,12 @@ import (
 	"github.com/ozonva/ova-travel-api/internal/utils"
 )
 
-type Flusher interface {
-	Flush(entities []travel.Trip) []travel.Trip
+type FlusherProvider interface {
+	Flush(entities []travel.Trip) error
 }
 
 func NewFlusher(chunkSize int,
-	entityRepo repo.Repo) Flusher {
+	entityRepo repo.Repo) FlusherProvider {
 	return &flusher{
 		chunkSize:  chunkSize,
 		entityRepo: entityRepo,
@@ -23,14 +23,12 @@ type flusher struct {
 	entityRepo repo.Repo
 }
 
-func (a flusher) Flush(entities []travel.Trip) []travel.Trip {
-	unsaved := make([]travel.Trip, 0)
-	for i := 0; i < len(entities); i += a.chunkSize {
-		maxIdx := utils.MinInt(i+a.chunkSize, len(entities))
-		if err := a.entityRepo.AddEntities(entities[i:maxIdx]); err != nil {
-			unsaved = append(unsaved, entities[i:maxIdx]...)
+func (a flusher) Flush(entities []travel.Trip) error {
+	for _, values := range utils.SplitByBatch(entities, a.chunkSize) {
+		if err := a.entityRepo.AddEntities(values); err != nil {
+			return err
 		}
 	}
 
-	return unsaved
+	return nil
 }

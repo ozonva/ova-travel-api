@@ -50,8 +50,8 @@ var _ = Describe("the strings package", func() {
 
 				flusher := NewFlusher(1, mockThing)
 
-				unsaved := flusher.Flush(slice)
-				Expect(len(unsaved)).To(Equal(0))
+				err := flusher.Flush(slice)
+				Expect(err).To(Equal(nil))
 			})
 		})
 
@@ -65,8 +65,8 @@ var _ = Describe("the strings package", func() {
 
 				flusher := NewFlusher(1, mockThing)
 
-				unsaved := flusher.Flush(slice)
-				Expect(len(unsaved)).To(Equal(len(slice)))
+				err := flusher.Flush(slice)
+				Expect(err).To(Not(Equal(nil)))
 			})
 		})
 	})
