@@ -19,9 +19,9 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type TravelRpcClient interface {
-	CreateTravel(ctx context.Context, in *CreateTravelRequest, opts ...grpc.CallOption) (*CreateTravelResponce, error)
+	CreateTravel(ctx context.Context, in *CreateTravelRequest, opts ...grpc.CallOption) (*CreateTravelResponse, error)
 	DescribeTravel(ctx context.Context, in *DescribeTravelRequest, opts ...grpc.CallOption) (*DescribeTravelResponse, error)
-	ListTravels(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*ListTravelsResponse, error)
+	ListTravels(ctx context.Context, in *ListTravelsRequest, opts ...grpc.CallOption) (*ListTravelsResponse, error)
 	RemoveTravel(ctx context.Context, in *RemoveTravelRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
@@ -33,8 +33,8 @@ func NewTravelRpcClient(cc grpc.ClientConnInterface) TravelRpcClient {
 	return &travelRpcClient{cc}
 }
 
-func (c *travelRpcClient) CreateTravel(ctx context.Context, in *CreateTravelRequest, opts ...grpc.CallOption) (*CreateTravelResponce, error) {
-	out := new(CreateTravelResponce)
+func (c *travelRpcClient) CreateTravel(ctx context.Context, in *CreateTravelRequest, opts ...grpc.CallOption) (*CreateTravelResponse, error) {
+	out := new(CreateTravelResponse)
 	err := c.cc.Invoke(ctx, "/ova.travel.api.TravelRpc/CreateTravel", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -51,7 +51,7 @@ func (c *travelRpcClient) DescribeTravel(ctx context.Context, in *DescribeTravel
 	return out, nil
 }
 
-func (c *travelRpcClient) ListTravels(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*ListTravelsResponse, error) {
+func (c *travelRpcClient) ListTravels(ctx context.Context, in *ListTravelsRequest, opts ...grpc.CallOption) (*ListTravelsResponse, error) {
 	out := new(ListTravelsResponse)
 	err := c.cc.Invoke(ctx, "/ova.travel.api.TravelRpc/ListTravels", in, out, opts...)
 	if err != nil {
@@ -73,9 +73,9 @@ func (c *travelRpcClient) RemoveTravel(ctx context.Context, in *RemoveTravelRequ
 // All implementations must embed UnimplementedTravelRpcServer
 // for forward compatibility
 type TravelRpcServer interface {
-	CreateTravel(context.Context, *CreateTravelRequest) (*CreateTravelResponce, error)
+	CreateTravel(context.Context, *CreateTravelRequest) (*CreateTravelResponse, error)
 	DescribeTravel(context.Context, *DescribeTravelRequest) (*DescribeTravelResponse, error)
-	ListTravels(context.Context, *emptypb.Empty) (*ListTravelsResponse, error)
+	ListTravels(context.Context, *ListTravelsRequest) (*ListTravelsResponse, error)
 	RemoveTravel(context.Context, *RemoveTravelRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedTravelRpcServer()
 }
@@ -84,13 +84,13 @@ type TravelRpcServer interface {
 type UnimplementedTravelRpcServer struct {
 }
 
-func (UnimplementedTravelRpcServer) CreateTravel(context.Context, *CreateTravelRequest) (*CreateTravelResponce, error) {
+func (UnimplementedTravelRpcServer) CreateTravel(context.Context, *CreateTravelRequest) (*CreateTravelResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateTravel not implemented")
 }
 func (UnimplementedTravelRpcServer) DescribeTravel(context.Context, *DescribeTravelRequest) (*DescribeTravelResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DescribeTravel not implemented")
 }
-func (UnimplementedTravelRpcServer) ListTravels(context.Context, *emptypb.Empty) (*ListTravelsResponse, error) {
+func (UnimplementedTravelRpcServer) ListTravels(context.Context, *ListTravelsRequest) (*ListTravelsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListTravels not implemented")
 }
 func (UnimplementedTravelRpcServer) RemoveTravel(context.Context, *RemoveTravelRequest) (*emptypb.Empty, error) {
@@ -146,7 +146,7 @@ func _TravelRpc_DescribeTravel_Handler(srv interface{}, ctx context.Context, dec
 }
 
 func _TravelRpc_ListTravels_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(emptypb.Empty)
+	in := new(ListTravelsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -158,7 +158,7 @@ func _TravelRpc_ListTravels_Handler(srv interface{}, ctx context.Context, dec fu
 		FullMethod: "/ova.travel.api.TravelRpc/ListTravels",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TravelRpcServer).ListTravels(ctx, req.(*emptypb.Empty))
+		return srv.(TravelRpcServer).ListTravels(ctx, req.(*ListTravelsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

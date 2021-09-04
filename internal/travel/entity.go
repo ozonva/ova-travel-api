@@ -3,7 +3,7 @@ package travel
 import "fmt"
 
 type Trip struct {
-	UserID       int
+	UserID       uint64
 	FromLocation string
 	DestLocation string
 }
