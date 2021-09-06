@@ -1,10 +1,14 @@
 package main
 
 import (
+	"context"
+	"database/sql"
+	"github.com/ozonva/ova-travel-api/internal/repo"
 	"net"
 	"os"
 	"time"
 
+	_ "github.com/jackc/pgx/stdlib"
 	"github.com/rs/zerolog"
 	"google.golang.org/grpc"
 
@@ -12,12 +16,18 @@ import (
 	api "github.com/ozonva/ova-travel-api/pkg/ova-travel-api"
 )
 
-const port = ":8080"
-
 func main() {
 	output := zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.RFC3339}
 	log := zerolog.New(output).With().Timestamp().Logger()
 
+	dsn := "user=kmolchan password=demo dbname=travel_demo sslmode=disable"
+	db, err := sql.Open("pgx", dsn)
+	if err != nil {
+		log.Fatal().Msgf("cannot open database connection: %w", err)
+		return
+	}
+
+	const port = ":8087"
 	log.Info().Msgf("start serve port %s", port)
 
 	listen, err := net.Listen("tcp", port)
@@ -25,8 +35,15 @@ func main() {
 		log.Fatal().Msgf("failed to listen: %v", err)
 	}
 
+	err = db.PingContext(context.Background())
+	if err != nil {
+		log.Fatal().Msgf("failed to connect to db: %v", err)
+		return
+	}
+
 	s := grpc.NewServer()
-	api.RegisterTravelRpcServer(s, server.NewTravelServer(&log))
+	r := repo.NewRepo(db)
+	api.RegisterTravelRpcServer(s, server.NewTravelServer(&log, r))
 	if err := s.Serve(listen); err != nil {
 		log.Fatal().Msgf("failed to serve: %v", err)
 	}
