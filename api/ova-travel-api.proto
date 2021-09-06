@@ -7,6 +7,8 @@ import "google/protobuf/empty.proto";
 
 service TravelRpc {
     rpc CreateTravel (CreateTravelRequest) returns (CreateTravelResponse);
+    rpc MultipleCreateTravel (MultipleCreateTravelRequest) returns (google.protobuf.Empty);
+    rpc UpdateTravel (UpdateTravelRequest) returns (google.protobuf.Empty);
     rpc DescribeTravel (DescribeTravelRequest) returns (DescribeTravelResponse);
     rpc ListTravels (ListTravelsRequest) returns (ListTravelsResponse);
     rpc RemoveTravel (RemoveTravelRequest) returns (google.protobuf.Empty);
@@ -17,8 +19,16 @@ message CreateTravelRequest {
     string dest = 2;
 }
 
+message MultipleCreateTravelRequest {
+    repeated Travel items = 1;
+}
+
 message CreateTravelResponse {
     uint64 id = 1;
+}
+
+message UpdateTravelRequest {
+    Travel travel = 1;
 }
 
 message DescribeTravelRequest {

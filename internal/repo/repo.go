@@ -19,6 +19,7 @@ const (
 type Repo interface {
 	AddEntities(entities []travel.Trip) error
 	ListEntities(limit, offset uint64) ([]travel.Trip, error)
+	UpdateEntity(entityID uint64, newTrip *travel.Trip) error
 	DescribeEntity(entityId uint64) (*travel.Trip, error)
 	RemoveEntity(entityId uint64) error
 }
@@ -29,6 +30,27 @@ func NewRepo(db *sql.DB) Repo {
 
 type repoImpl struct {
 	db *sql.DB
+}
+
+func (r repoImpl) UpdateEntity(entityID uint64, newTrip *travel.Trip) error {
+	result, err := sq.StatementBuilder.PlaceholderFormat(sq.Dollar).
+		Update(tableName).
+		Set(fromColumn, newTrip.FromLocation).
+		Set(destColumn, newTrip.DestLocation).
+		Where(sq.Eq{idColumn: entityID}).
+		RunWith(r.db).
+		Exec()
+
+	if err != nil {
+		return fmt.Errorf("cannot run update query: %w", err)
+	}
+
+	_, err = result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("cannot get rows affected: %w", err)
+	}
+
+	return nil
 }
 
 func (r repoImpl) AddEntities(entities []travel.Trip) error {

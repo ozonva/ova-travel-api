@@ -1,8 +1,6 @@
 package utils
 
 import (
-	"fmt"
-
 	"github.com/ozonva/ova-travel-api/internal/travel"
 )
 
@@ -13,17 +11,4 @@ func SplitByBatch(arr []travel.Trip, batch int) [][]travel.Trip {
 	}
 
 	return batchSlice
-}
-
-func ConvertSpliceToMap(arr []travel.Trip) map[int]travel.Trip {
-	result := make(map[int]travel.Trip)
-	for _, entity := range arr {
-		if _, found := result[entity.UserID]; found {
-			panic(fmt.Sprintf("UserID is duplicated %v", entity.UserID))
-		}
-
-		result[entity.UserID] = entity
-	}
-
-	return result
 }

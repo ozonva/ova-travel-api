@@ -20,6 +20,8 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type TravelRpcClient interface {
 	CreateTravel(ctx context.Context, in *CreateTravelRequest, opts ...grpc.CallOption) (*CreateTravelResponse, error)
+	MultipleCreateTravel(ctx context.Context, in *MultipleCreateTravelRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	UpdateTravel(ctx context.Context, in *UpdateTravelRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	DescribeTravel(ctx context.Context, in *DescribeTravelRequest, opts ...grpc.CallOption) (*DescribeTravelResponse, error)
 	ListTravels(ctx context.Context, in *ListTravelsRequest, opts ...grpc.CallOption) (*ListTravelsResponse, error)
 	RemoveTravel(ctx context.Context, in *RemoveTravelRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
@@ -36,6 +38,24 @@ func NewTravelRpcClient(cc grpc.ClientConnInterface) TravelRpcClient {
 func (c *travelRpcClient) CreateTravel(ctx context.Context, in *CreateTravelRequest, opts ...grpc.CallOption) (*CreateTravelResponse, error) {
 	out := new(CreateTravelResponse)
 	err := c.cc.Invoke(ctx, "/ova.travel.api.TravelRpc/CreateTravel", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *travelRpcClient) MultipleCreateTravel(ctx context.Context, in *MultipleCreateTravelRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/ova.travel.api.TravelRpc/MultipleCreateTravel", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *travelRpcClient) UpdateTravel(ctx context.Context, in *UpdateTravelRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/ova.travel.api.TravelRpc/UpdateTravel", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -74,6 +94,8 @@ func (c *travelRpcClient) RemoveTravel(ctx context.Context, in *RemoveTravelRequ
 // for forward compatibility
 type TravelRpcServer interface {
 	CreateTravel(context.Context, *CreateTravelRequest) (*CreateTravelResponse, error)
+	MultipleCreateTravel(context.Context, *MultipleCreateTravelRequest) (*emptypb.Empty, error)
+	UpdateTravel(context.Context, *UpdateTravelRequest) (*emptypb.Empty, error)
 	DescribeTravel(context.Context, *DescribeTravelRequest) (*DescribeTravelResponse, error)
 	ListTravels(context.Context, *ListTravelsRequest) (*ListTravelsResponse, error)
 	RemoveTravel(context.Context, *RemoveTravelRequest) (*emptypb.Empty, error)
@@ -86,6 +108,12 @@ type UnimplementedTravelRpcServer struct {
 
 func (UnimplementedTravelRpcServer) CreateTravel(context.Context, *CreateTravelRequest) (*CreateTravelResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateTravel not implemented")
+}
+func (UnimplementedTravelRpcServer) MultipleCreateTravel(context.Context, *MultipleCreateTravelRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MultipleCreateTravel not implemented")
+}
+func (UnimplementedTravelRpcServer) UpdateTravel(context.Context, *UpdateTravelRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateTravel not implemented")
 }
 func (UnimplementedTravelRpcServer) DescribeTravel(context.Context, *DescribeTravelRequest) (*DescribeTravelResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DescribeTravel not implemented")
@@ -123,6 +151,42 @@ func _TravelRpc_CreateTravel_Handler(srv interface{}, ctx context.Context, dec f
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(TravelRpcServer).CreateTravel(ctx, req.(*CreateTravelRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TravelRpc_MultipleCreateTravel_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MultipleCreateTravelRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TravelRpcServer).MultipleCreateTravel(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ova.travel.api.TravelRpc/MultipleCreateTravel",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TravelRpcServer).MultipleCreateTravel(ctx, req.(*MultipleCreateTravelRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TravelRpc_UpdateTravel_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateTravelRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TravelRpcServer).UpdateTravel(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ova.travel.api.TravelRpc/UpdateTravel",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TravelRpcServer).UpdateTravel(ctx, req.(*UpdateTravelRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -191,6 +255,14 @@ var TravelRpc_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateTravel",
 			Handler:    _TravelRpc_CreateTravel_Handler,
+		},
+		{
+			MethodName: "MultipleCreateTravel",
+			Handler:    _TravelRpc_MultipleCreateTravel_Handler,
+		},
+		{
+			MethodName: "UpdateTravel",
+			Handler:    _TravelRpc_UpdateTravel_Handler,
 		},
 		{
 			MethodName: "DescribeTravel",
