@@ -36,7 +36,7 @@ func NewTravelServer(logger *zerolog.Logger, rep repo.Repo) api.TravelRpcServer 
 	}
 }
 
-func (g *GRPCServer) CreateTravel(ctx context.Context, request *api.CreateTravelRequest) (*api.CreateTravelResponse, error) {
+func (g *GRPCServer) CreateTravel(_ context.Context, request *api.CreateTravelRequest) (*api.CreateTravelResponse, error) {
 	g.logger.Info().Msg("Request: CreateTravel")
 
 	trip := travel.Trip{
@@ -69,7 +69,7 @@ func SplitTripsByBatch(arr []*api.Travel, batch int) [][]*api.Travel {
 func (g *GRPCServer) MultipleCreateTravel(ctx context.Context, request *api.MultipleCreateTravelRequest) (*emptypb.Empty, error) {
 	g.logger.Info().Msg("Request: MultipleCreateTravel")
 
-	span, ctx := opentracing.StartSpanFromContext(ctx, "operation_name")
+	span, _ := opentracing.StartSpanFromContext(ctx, "operation_name")
 	defer span.Finish()
 	span.LogFields(log.String("MultipleCreateTravel", "start"))
 
@@ -114,7 +114,7 @@ func getTrip(travelMsg *api.Travel) travel.Trip {
 	}
 }
 
-func (g *GRPCServer) UpdateTravel(ctx context.Context, request *api.UpdateTravelRequest) (*emptypb.Empty, error) {
+func (g *GRPCServer) UpdateTravel(_ context.Context, request *api.UpdateTravelRequest) (*emptypb.Empty, error) {
 	g.logger.Info().Msg("Request: UpdateTravel")
 
 	newTrip := getTrip(request.GetTravel())
@@ -127,7 +127,7 @@ func (g *GRPCServer) UpdateTravel(ctx context.Context, request *api.UpdateTravel
 	return new(emptypb.Empty), nil
 }
 
-func (g *GRPCServer) DescribeTravel(ctx context.Context, request *api.DescribeTravelRequest) (*api.DescribeTravelResponse, error) {
+func (g *GRPCServer) DescribeTravel(_ context.Context, request *api.DescribeTravelRequest) (*api.DescribeTravelResponse, error) {
 	g.logger.Info().Msg("Request: DescribeTravel")
 
 	id := request.Id
@@ -153,7 +153,7 @@ func (g *GRPCServer) DescribeTravel(ctx context.Context, request *api.DescribeTr
 	return res, status.Error(codes.OK, "")
 }
 
-func (g *GRPCServer) ListTravel(ctx context.Context, req *api.ListTravelsRequest) (*api.ListTravelsResponse, error) {
+func (g *GRPCServer) ListTravel(_ context.Context, req *api.ListTravelsRequest) (*api.ListTravelsResponse, error) {
 	g.logger.Info().Msg("Request: ListTravel")
 
 	limit := req.GetLimit()
@@ -185,7 +185,7 @@ func (g *GRPCServer) ListTravel(ctx context.Context, req *api.ListTravelsRequest
 	return res, status.Error(codes.OK, "")
 }
 
-func (g *GRPCServer) RemoveTravel(ctx context.Context, req *api.RemoveTravelRequest) (*emptypb.Empty, error) {
+func (g *GRPCServer) RemoveTravel(_ context.Context, req *api.RemoveTravelRequest) (*emptypb.Empty, error) {
 	g.logger.Info().Msg("Request: RemoveTravel")
 
 	id := req.GetId()

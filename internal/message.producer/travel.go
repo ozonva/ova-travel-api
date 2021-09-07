@@ -2,7 +2,6 @@ package message_producer
 
 import (
 	"context"
-	"fmt"
 	"log"
 
 	"github.com/segmentio/kafka-go"
@@ -30,8 +29,8 @@ type kafkaProducer struct {
 
 func (k kafkaProducer) TravelSaved() {
 	msg := kafka.Message{
-		Key:   []byte(fmt.Sprintf("New Trip")),
-		Value: []byte(fmt.Sprintf("New trip was created")),
+		Key:   []byte("New Trip"),
+		Value: []byte("New trip was created"),
 	}
 
 	err := k.k.WriteMessages(context.Background(), msg)
@@ -43,8 +42,8 @@ func (k kafkaProducer) TravelSaved() {
 
 func (k kafkaProducer) TravelUpdated() {
 	msg := kafka.Message{
-		Key:   []byte(fmt.Sprintf("Trip updated")),
-		Value: []byte(fmt.Sprintf("Existing trip was updated")),
+		Key:   []byte("Trip updated"),
+		Value: []byte("Existing trip was updated"),
 	}
 
 	err := k.k.WriteMessages(context.Background(), msg)
@@ -56,8 +55,8 @@ func (k kafkaProducer) TravelUpdated() {
 
 func (k kafkaProducer) TravelDeleted() {
 	msg := kafka.Message{
-		Key:   []byte(fmt.Sprintf("Trip was deleted")),
-		Value: []byte(fmt.Sprintf("Existing trip was deleted")),
+		Key:   []byte("Trip was deleted"),
+		Value: []byte("Existing trip was deleted"),
 	}
 
 	err := k.k.WriteMessages(context.Background(), msg)
