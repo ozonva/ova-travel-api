@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"github.com/ozonva/ova-travel-api/internal/repo"
+	"github.com/ozonva/ova-travel-api/internal/tracer"
 	"net"
 	"os"
 	"time"
@@ -20,10 +21,20 @@ func main() {
 	output := zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.RFC3339}
 	log := zerolog.New(output).With().Timestamp().Logger()
 
+	_, closer := tracer.InitGlobalTracer()
+	defer func() {
+		err := closer.Close()
+		log.Fatal().Msgf("Can't init tracer %s", err)
+	}()
+
 	dsn := "user=kmolchan password=demo dbname=travel_demo sslmode=disable"
 	db, err := sql.Open("pgx", dsn)
+	defer func() {
+		err = db.Close()
+	}()
+
 	if err != nil {
-		log.Fatal().Msgf("cannot open database connection: %w", err)
+		log.Fatal().Msgf("cannot open database connection: %s", err)
 		return
 	}
 

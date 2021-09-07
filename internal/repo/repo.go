@@ -3,6 +3,7 @@ package repo
 import (
 	"database/sql"
 	"fmt"
+	"log"
 
 	sq "github.com/Masterminds/squirrel"
 
@@ -19,6 +20,7 @@ const (
 type Repo interface {
 	AddEntities(entities []travel.Trip) error
 	ListEntities(limit, offset uint64) ([]travel.Trip, error)
+	UpdateEntity(entityID uint64, newTrip *travel.Trip) error
 	DescribeEntity(entityId uint64) (*travel.Trip, error)
 	RemoveEntity(entityId uint64) error
 }
@@ -29,6 +31,27 @@ func NewRepo(db *sql.DB) Repo {
 
 type repoImpl struct {
 	db *sql.DB
+}
+
+func (r repoImpl) UpdateEntity(entityID uint64, newTrip *travel.Trip) error {
+	result, err := sq.StatementBuilder.PlaceholderFormat(sq.Dollar).
+		Update(tableName).
+		Set(fromColumn, newTrip.FromLocation).
+		Set(destColumn, newTrip.DestLocation).
+		Where(sq.Eq{idColumn: entityID}).
+		RunWith(r.db).
+		Exec()
+
+	if err != nil {
+		return fmt.Errorf("cannot run update query: %w", err)
+	}
+
+	_, err = result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("cannot get rows affected: %w", err)
+	}
+
+	return nil
 }
 
 func (r repoImpl) AddEntities(entities []travel.Trip) error {
@@ -51,14 +74,24 @@ func (r repoImpl) AddEntities(entities []travel.Trip) error {
 
 	stmt, err := tx.Prepare(sqlStmt)
 	if err != nil {
-		tx.Rollback()
+		if err := tx.Rollback(); err != nil {
+			log.Fatal("can't rollback transaction")
+		}
 		return fmt.Errorf("failed to build sql template: %w", err)
 	}
-	defer stmt.Close()
+	defer func(stmt *sql.Stmt) {
+		err := stmt.Close()
+		if err != nil {
+			log.Fatal("statement closure error")
+		}
+	}(stmt)
 
 	for i := 0; i < len(entities); i++ {
 		if _, err := stmt.Exec(entities[i].FromLocation, entities[i].DestLocation); err != nil {
-			tx.Rollback()
+			if err := tx.Rollback(); err != nil {
+				log.Fatal("Can't rollback transaction")
+			}
+
 			return fmt.Errorf("cannot fill prepared statement: %w", err)
 		}
 	}
@@ -81,7 +114,12 @@ func (r repoImpl) ListEntities(limit, offset uint64) ([]travel.Trip, error) {
 	if err != nil {
 		return nil, fmt.Errorf("cannot run list query: %w", err)
 	}
-	defer trips.Close()
+	defer func(trips *sql.Rows) {
+		err := trips.Close()
+		if err != nil {
+			log.Fatal("statement closure error")
+		}
+	}(trips)
 
 	result := make([]travel.Trip, 0, limit)
 
@@ -110,7 +148,12 @@ func (r repoImpl) DescribeEntity(entityId uint64) (*travel.Trip, error) {
 	if err != nil {
 		return nil, fmt.Errorf("cannot run describe query: %w", err)
 	}
-	defer trips.Close()
+	defer func(trips *sql.Rows) {
+		err := trips.Close()
+		if err != nil {
+			log.Fatal("statement closure error")
+		}
+	}(trips)
 
 	if !trips.Next() {
 		return nil, nil
